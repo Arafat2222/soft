@@ -1,0 +1,147 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<!-- Move this script inside the content block, just before the closing div -->
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-white to-purple-100 animate-gradient-xy">
+    <div class="max-w-md w-full p-8 bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-300">
+        <div class="text-center mb-8 animate-fadeIn">
+            <h2 class="text-4xl font-bold text-gray-800 mb-3">Welcome Back</h2>
+            <p class="text-gray-600 text-lg">Admin Portal Access</p>
+            <div class="h-1 w-20 bg-blue-500 mx-auto mt-4 rounded-full"></div>
+        </div>
+
+        <!-- Update the message div class -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert-message mb-6 p-4 rounded-lg animate-slideIn relative transition-opacity duration-300 {% if message.tags == 'error' %}bg-red-100 text-red-700 border-l-4 border-red-500{% else %}bg-green-100 text-green-700 border-l-4 border-green-500{% endif %}">
+                    {{ message }}
+                    <button onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST" action="{% url 'admin_login' %}" class="space-y-6">
+            {% csrf_token %}
+            <div class="group animate-slideUp">
+                <label for="username" class="block text-sm font-semibold text-gray-700 mb-2">Username</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </span>
+                    <input type="text" name="username" id="username" required 
+                        class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent bg-white/70 backdrop-blur-sm transition-all duration-300">
+                </div>
+            </div>
+
+            <div class="group animate-slideUp" style="animation-delay: 200ms;">
+                <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">Password</label>
+                <!-- Update the password input section -->
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                    </span>
+                    <input type="password" name="password" id="password" required 
+                        class="pl-10 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent bg-white/70 backdrop-blur-sm transition-all duration-300">
+                    <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700">
+                        <svg id="show-password" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        <svg id="hide-password" class="h-5 w-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="animate-slideUp" style="animation-delay: 400ms;">
+                <button type="submit" 
+                    class="w-full py-3 px-4 text-white font-medium rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform hover:-translate-y-1 transition-all duration-300 shadow-lg hover:shadow-xl">
+                    Sign in
+                </button>
+                <div class="text-center mt-4">
+                    <a href="{% url 'forgot_password' %}" class="text-blue-600 hover:text-blue-800 text-sm transition-colors duration-200">
+                        Forgot Password?
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    @keyframes gradient-xy {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    @keyframes slideIn {
+        from { transform: translateX(-100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideUp {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    .animate-gradient-xy {
+        background-size: 200% 200%;
+        animation: gradient-xy 15s ease infinite;
+    }
+    .animate-fadeIn {
+        animation: fadeIn 1s ease-out;
+    }
+    .animate-slideIn {
+        animation: slideIn 0.5s ease-out;
+    }
+    .animate-slideUp {
+        animation: slideUp 0.5s ease-out forwards;
+        opacity: 0;
+    }
+</style>
+
+<!-- Add the script here, before the closing content block -->
+<script>
+    // Auto-dismiss flash messages
+    document.addEventListener('DOMContentLoaded', function() {
+        const messages = document.querySelectorAll('.alert-message');
+        if (messages.length > 0) {
+            messages.forEach(message => {
+                setTimeout(() => {
+                    message.style.opacity = '0';
+                    setTimeout(() => {
+                        message.remove();
+                    }, 300);
+                }, 5000);
+            });
+        }
+    });
+
+    // Toggle password visibility
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const showIcon = document.getElementById('show-password');
+        const hideIcon = document.getElementById('hide-password');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            showIcon.classList.add('hidden');
+            hideIcon.classList.remove('hidden');
+        } else {
+            passwordInput.type = 'password';
+            showIcon.classList.remove('hidden');
+            hideIcon.classList.add('hidden');
+        }
+    }
+</script>
+{% endblock %}

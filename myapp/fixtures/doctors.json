@@ -1,0 +1,68 @@
+[
+    {
+        "model": "myapp.doctor",
+        "pk": 1,
+        "fields": {
+            "username": "dr.rahim",
+            "full_name": "Dr. Rahim",
+            "email": "drrahim@gmail.com",
+            "password": "pbkdf2_sha256$870000$fG7mQIxFgqMbTFL8ICphfQ$kBDvgSTH+V2QQ9Xri/qpTAugsTB+YdIZohDVbFWlWPQ=",
+            "image": "images/doctors/D2.png",
+            "degrees": ["MBBS", "MD", "Cardiology"],
+            "experience": 15,
+            "category": 1,
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "myapp.doctor",
+        "pk": 2,
+        "fields": {
+            "username": "dr.sarah",
+            "full_name": "Dr. Sarah Johnson",
+            "email": "drsarah@gmail.com",
+            "password": "pbkdf2_sha256$870000$fG7mQIxFgqMbTFL8ICphfQ$kBDvgSTH+V2QQ9Xri/qpTAugsTB+YdIZohDVbFWlWPQ=",
+            "image": "images/doctors/D3.png",
+            "degrees": ["MBBS", "MD", "Dermatology"],
+            "experience": 10,
+            "category": 2,
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "myapp.doctor",
+        "pk": 3,
+        "fields": {
+            "username": "dr.Karim",
+            "full_name": "Dr. Karim Ahmed",
+            "email": "drkarim@gmail.com",
+            "password": "pbkdf2_sha256$870000$fG7mQIxFgqMbTFL8ICphfQ$kBDvgSTH+V2QQ9Xri/qpTAugsTB+YdIZohDVbFWlWPQ=",
+            "image": "images/doctors/D1.png",
+            "degrees": ["MBBS", "MD", "Neurology"],
+            "experience": 12,
+            "category": 3,
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "myapp.doctor",
+        "pk": 4,
+        "fields": {
+            "username": "dr.hasib",
+            "full_name": "Dr. Hasib Ahmed",
+            "email": "drhasbib@gmail.com",
+            "password": "pbkdf2_sha256$870000$fG7mQIxFgqMbTFL8ICphfQ$kBDvgSTH+V2QQ9Xri/qpTAugsTB+YdIZohDVbFWlWPQ=",
+            "image": "images/doctors/D4.png",
+            "degrees": ["MBBS", "MD", "Pediatrics"],
+            "experience": 8,
+            "category": 4,
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z"
+        }
+    }
+]
+    
+  

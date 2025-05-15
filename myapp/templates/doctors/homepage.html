@@ -1,0 +1,281 @@
+{% extends 'doctors/base.html' %}
+{% load static %}
+
+{% block title %}Doctor Dashboard{% endblock %}
+
+{% block content %}
+<!-- Stats Overview -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-center">
+            <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center">
+                <i class="fas fa-calendar-check text-[#33BFFF] text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <div class="text-gray-500 text-sm">Today's Appointments</div>
+                <p class="text-2xl font-bold text-gray-800">{{ today_appointments_count }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-center">
+            <div class="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center">
+                <i class="fas fa-user-friends text-green-500 text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <h3 class="text-gray-500 text-sm">Total Patients</h3>
+                <p class="text-2xl font-bold text-gray-800">{{ total_patients }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div class="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-center">
+            <div class="w-12 h-12 bg-purple-50 rounded-full flex items-center justify-center">
+                <i class="fas fa-clock text-purple-500 text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <h3 class="text-gray-500 text-sm">Working Hours</h3>
+                <p class="text-2xl font-bold text-gray-800">{{ working_hours }}</p>
+            </div>
+        </div>
+    </div> -->
+
+    <!-- <div class="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+        <div class="flex items-center">
+            <div class="w-12 h-12 bg-yellow-50 rounded-full flex items-center justify-center">
+                <i class="fas fa-star text-yellow-500 text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <h3 class="text-gray-500 text-sm">Rating</h3>
+                <p class="text-2xl font-bold text-gray-800">4.8</p>
+            </div>
+        </div>
+    </div> -->
+</div>
+
+<!-- Recent Appointments -->
+<div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-semibold text-gray-800">Recent Appointments</h2>
+        <a href="{% url 'doctor_appointments' %}" class="text-[#33BFFF] hover:text-[#0099FF] font-medium">View All</a>
+    </div>
+    
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead>
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Patient</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Contact</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                   
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for appointment in recent_appointments %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-[#33BFFF]"></i>
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900">{{ appointment.patient.full_name }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">
+                            <div class="flex items-center">
+                                <i class="fas fa-phone-alt text-gray-400 mr-2"></i>
+                                {{ appointment.patient.contact }}
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ appointment.appointment_date|date:"M d, Y" }}
+                    </td>
+                    
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                            {% if appointment.status == 'confirmed' %}bg-green-100 text-green-800
+                            {% elif appointment.status == 'pending' %}bg-yellow-100 text-yellow-800
+                            {% else %}bg-red-100 text-red-800{% endif %}">
+                            {{ appointment.status|title }}
+                        </span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="px-6 py-4 text-center text-gray-500">
+                        No appointments found
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Schedule Overview -->
+<div class="bg-white rounded-xl shadow-sm p-6">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-semibold text-gray-800">My Schedule</h2>
+        <a href="{% url 'doctor_schedule' %}" class="text-[#33BFFF] hover:text-[#0099FF] font-medium">Manage Schedule</a>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {% for schedule in doctor_schedules %}
+            {% if schedule.doctor.id == request.session.doctor_id %}
+            <div class="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-all">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center">
+                            <i class="fas fa-calendar-day text-[#33BFFF]"></i>
+                        </div>
+                        <span class="ml-3 font-medium text-gray-800">{{ schedule.day }}</span>
+                    </div>
+                    {% if schedule.is_available %}
+                        <span class="px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">Active</span>
+                    {% endif %}
+                </div>
+                <div class="flex items-center text-gray-600 mb-2">
+                    <i class="fas fa-clock text-[#33BFFF] mr-2"></i>
+                    <span>{{ schedule.start_time|time:"g:i A" }} - {{ schedule.end_time|time:"g:i A" }}</span>
+                </div>
+            </div>
+            {% endif %}
+        {% empty %}
+            <div class="col-span-full text-center py-8">
+                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-calendar-times text-gray-400 text-2xl"></i>
+                </div>
+                <p class="text-gray-500">No schedules set yet</p>
+                <a href="{% url 'doctor_schedule' %}" class="text-[#33BFFF] hover:text-[#0099FF] font-medium mt-2 inline-block">
+                    Set Your Schedule
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+<!-- Add this somewhere in your homepage where you want the edit button -->
+<button onclick="openEditDoctorModal()" class="text-[#33BFFF] hover:text-[#0099FF]">
+    Edit Profile
+</button>
+
+<!-- Edit Doctor Modal -->
+<div id="editDoctorModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-2xl">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold">Edit Profile</h3>
+            <button onclick="closeEditDoctorModal()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form id="editDoctorForm" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Full Name</label>
+                    <input type="text" name="full_name" id="edit_full_name" class="w-full border rounded-lg px-3 py-2" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                    <input type="email" name="email" id="edit_email" class="w-full border rounded-lg px-3 py-2" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Mobile</label>
+                    <input type="tel" name="mobile" id="edit_mobile" class="w-full border rounded-lg px-3 py-2" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Degrees</label>
+                    <input type="text" name="degrees" id="edit_degrees" class="w-full border rounded-lg px-3 py-2">
+                </div>
+                <div class="mb-4 col-span-2">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Description</label>
+                    <textarea name="description" id="edit_description" class="w-full border rounded-lg px-3 py-2" rows="3"></textarea>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Profile Image</label>
+                    <input type="file" name="image" accept="image/*" class="w-full">
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3 mt-4">
+                <button type="button" onclick="closeEditDoctorModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">
+                    Cancel
+                </button>
+                <button type="submit" class="bg-[#33BFFF] hover:bg-[#0099FF] text-white px-4 py-2 rounded-lg">
+                    Update Profile
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Script loaded');
+
+    document.getElementById('editDoctorForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+
+        fetch('/doctor/update-profile/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                closeEditDoctorModal();
+                document.querySelector('.text-gray-700.cursor-pointer').textContent = 'Dr. ' + formData.get('full_name');
+                alert('Profile updated successfully');
+                window.location.reload();
+            } else {
+                alert(data.message || 'Error updating profile');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating the profile');
+        });
+    });
+});
+
+function openEditDoctorModal() {
+    fetch('/doctor/get-details/')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('edit_full_name').value = data.full_name;
+            document.getElementById('edit_email').value = data.email;
+            document.getElementById('edit_mobile').value = data.mobile;
+            document.getElementById('edit_degrees').value = data.degrees || '';
+            document.getElementById('edit_description').value = data.description || '';
+            
+            document.getElementById('editDoctorModal').classList.remove('hidden');
+            document.getElementById('editDoctorModal').classList.add('flex');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error loading doctor details');
+        });
+}
+
+function closeEditDoctorModal() {
+    document.getElementById('editDoctorModal').classList.add('hidden');
+    document.getElementById('editDoctorModal').classList.remove('flex');
+}
+
+window.onclick = function(event) {
+    const modal = document.getElementById('editDoctorModal');
+    if (event.target == modal) {
+        closeEditDoctorModal();
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends 'general user/gs_base.html' %}
+
+{% block title %}User Profile{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Profile Header -->
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+        <div class="flex items-center space-x-6">
+            <div class="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center">
+                <i class="fas fa-user text-[#33BFFF] text-4xl"></i>
+            </div>
+            <div>
+                <h1 class="text-2xl font-semibold text-gray-800">{{ request.session.user_name }}</h1>
+                <p class="text-gray-500">{{ user.email }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-3 gap-6">
+        <!-- Profile Information -->
+        <div class="col-span-2 bg-white rounded-xl shadow-sm p-6">
+            <h2 class="text-xl font-semibold mb-6">Profile Information</h2>
+            <form method="POST" class="space-y-4">
+                {% csrf_token %}
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                        <input type="text" name="full_name" value="{{ user.full_name }}" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#33BFFF] focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" name="email" value="{{ user.email }}" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#33BFFF] focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Contact</label>
+                        <input type="tel" name="contact" value="{{ user.contact }}" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#33BFFF] focus:border-transparent">
+                    </div>
+                </div>
+                <button type="submit" class="mt-4 bg-[#33BFFF] text-white px-6 py-2 rounded-lg hover:bg-[#0099FF] transition-all">Update Profile</button>
+            </form>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="space-y-6">
+            <!-- Medical Records -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h3 class="text-lg font-semibold mb-4">Medical Records</h3>
+                <div class="space-y-3">
+                    <a href="#" class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-file-medical text-[#33BFFF]"></i>
+                            <span>Medical Reports</span>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </a>
+                    <a href="#" class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-prescription text-[#33BFFF]"></i>
+                            <span>Prescriptions</span>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </a>
+                    <a href="#" class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-all">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-receipt text-[#33BFFF]"></i>
+                            <span>Hospital Bills</span>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Appointments -->
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h3 class="text-lg font-semibold mb-4">Recent Appointments</h3>
+                <div class="space-y-3">
+                    {% for appointment in recent_appointments %}
+                    <div class="p-3 bg-gray-50 rounded-lg">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="font-medium">Dr. {{ appointment.doctor_name }}</p>
+                                <p class="text-sm text-gray-500">{{ appointment.date }}</p>
+                            </div>
+                            <span class="px-2 py-1 text-xs rounded-full {% if appointment.status == 'Completed' %}bg-green-100 text-green-700{% else %}bg-blue-100 text-blue-700{% endif %}">
+                                {{ appointment.status }}
+                            </span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-gray-500 text-center py-2">No recent appointments</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

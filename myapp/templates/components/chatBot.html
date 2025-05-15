@@ -1,0 +1,288 @@
+<!-- AI Chatbot Widget -->
+ <div id="chatbotWidget" class="fixed bottom-6 right-6 z-50">
+    <!-- Chat Button -->
+    <!-- Replace the existing chat button with this -->
+    <button id="chatToggleBtn" class="chat-widget-button fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full flex items-center justify-center group">
+        <div class="chat-icon-container">
+            <i id="chatBtnIcon" class="fas fa-message-dots text-white text-2xl group-hover:scale-110 transition-transform"></i>
+            <span class="chat-notification-dot"></span>
+        </div>
+    </button>
+    
+    <!-- Chat Window -->
+    <div id="chatWindow" class="hidden bg-white rounded-2xl shadow-2xl w-80 sm:w-96 h-[450px] absolute bottom-20 right-0 overflow-hidden flex flex-col transition-all duration-300 border border-gray-200">
+        <!-- Chat Header -->
+        <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-3 flex items-center justify-between">
+            <div class="flex items-center">
+                <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center mr-2">
+                    <i class="fas fa-robot text-white"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-sm">HealthCare Assistant</h3>
+                    <p class="text-xs text-white/80">Online | Ready to help</p>
+                </div>
+            </div>
+            <button id="chatCloseBtn" class="text-white/80 hover:text-white">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <!-- Chat Messages -->
+        <div id="chatMessages" class="flex-1 p-4 overflow-y-auto">
+            <div class="chat-message bot-message mb-4">
+                <div class="flex items-start">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-2 flex-shrink-0">
+                        <i class="fas fa-robot text-blue-600 text-sm"></i>
+                    </div>
+                    <div class="bg-gray-100 rounded-lg py-2 px-3 max-w-[80%]">
+                        <p class="text-gray-800 text-sm">হ্যালো! আমি আপনার স্বাস্থ্যসেবা সহকারী।আমি আপনাকে কীভাবে সাহায্য করতে পারি?</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Chat Input -->
+        <div class="border-t border-gray-200 p-3">
+            <div class="flex items-center">
+                <input type="text" id="chatInput" placeholder="Type your message..." class="flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-blue-500">
+                <button id="chatSendBtn" class="ml-2 bg-blue-600 text-white rounded-full w-9 h-9 flex items-center justify-center hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-paper-plane text-sm"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Chatbot JavaScript -->
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatToggleBtn = document.getElementById('chatToggleBtn');
+            const chatCloseBtn = document.getElementById('chatCloseBtn');
+            const chatWindow = document.getElementById('chatWindow');
+            const chatBtnIcon = document.getElementById('chatBtnIcon');
+            const chatInput = document.getElementById('chatInput');
+            const chatSendBtn = document.getElementById('chatSendBtn');
+            const chatMessages = document.getElementById('chatMessages');
+            
+            // Toggle chat window
+            chatToggleBtn.addEventListener('click', function() {
+                chatWindow.classList.toggle('hidden');
+                if (!chatWindow.classList.contains('hidden')) {
+                    chatBtnIcon.classList.remove('fa-comment-dots');
+                    chatBtnIcon.classList.add('fa-times');
+                    chatInput.focus();
+                } else {
+                    chatBtnIcon.classList.remove('fa-times');
+                    chatBtnIcon.classList.add('fa-comment-dots');
+                }
+            });
+            
+            // Close chat window
+            chatCloseBtn.addEventListener('click', function() {
+                chatWindow.classList.add('hidden');
+                chatBtnIcon.classList.remove('fa-times');
+                chatBtnIcon.classList.add('fa-comment-dots');
+            });
+            
+            // Send message on button click
+            chatSendBtn.addEventListener('click', sendMessage);
+            
+            // Send message on Enter key
+            chatInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            // Send message function
+            function sendMessage() {
+                const message = chatInput.value.trim();
+                if (message === '') return;
+                
+                // Add user message to chat
+                addMessage(message, 'user');
+                chatInput.value = '';
+                
+                // Show typing indicator
+                showTypingIndicator();
+                
+                // Send message to backend API
+                fetch('/chat-with-gemini/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        message: message
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    removeTypingIndicator();
+                    addMessage(data.response, 'bot');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    removeTypingIndicator();
+                    addMessage("দুঃখিত, একটি ত্রুটি হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।", 'bot');
+                });
+            }
+            
+            // Get CSRF token from cookies
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            
+            // Add message to chat
+            function addMessage(message, sender) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `chat-message ${sender}-message mb-4`;
+                
+                if (sender === 'user') {
+                    messageDiv.innerHTML = `
+                        <div class="flex items-start justify-end">
+                            <div class="bg-blue-600 rounded-lg py-2 px-3 max-w-[80%]">
+                                <p class="text-white text-sm">${message}</p>
+                            </div>
+                            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center ml-2 flex-shrink-0">
+                                <i class="fas fa-user text-blue-600 text-sm"></i>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    messageDiv.innerHTML = `
+                        <div class="flex items-start">
+                            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-2 flex-shrink-0">
+                                <i class="fas fa-robot text-blue-600 text-sm"></i>
+                            </div>
+                            <div class="bg-gray-100 rounded-lg py-2 px-3 max-w-[80%]">
+                                <p class="text-gray-800 text-sm">${message}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            // Show typing indicator
+            function showTypingIndicator() {
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'chat-message bot-message mb-4 typing-indicator';
+                typingDiv.innerHTML = `
+                    <div class="flex items-start">
+                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mr-2 flex-shrink-0">
+                            <i class="fas fa-robot text-blue-600 text-sm"></i>
+                        </div>
+                        <div class="bg-gray-100 rounded-lg py-2 px-3">
+                            <div class="flex space-x-1">
+                                <div class="typing-dot bg-gray-500"></div>
+                                <div class="typing-dot bg-gray-500"></div>
+                                <div class="typing-dot bg-gray-500"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                chatMessages.appendChild(typingDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            // Remove typing indicator
+            function removeTypingIndicator() {
+                const typingIndicator = document.querySelector('.typing-indicator');
+                if (typingIndicator) {
+                    typingIndicator.remove();
+                }
+            }
+        });
+        </script>
+        
+        <!-- Add styles for typing indicator -->
+        <style>
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            animation: typing 1.5s infinite ease-in-out;
+        }
+        
+        .typing-dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+        
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+        
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+        
+        @keyframes typing {
+            0%, 100% {
+                transform: translateY(0px);
+                opacity: 0.5;
+            }
+            50% {
+                transform: translateY(-5px);
+                opacity: 1;
+            }
+        }
+        
+        /* Chat button pulse animation */
+        .chat-button-pulse {
+            animation: pulse 2s infinite;
+            position: relative;
+        }
+        
+        .chat-button-pulse::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            border-radius: 50%;
+            background-color: rgba(59, 130, 246, 0.5);
+            z-index: -1;
+            animation: pulse-ring 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(0.95);
+            }
+            70% {
+                transform: scale(1);
+            }
+            100% {
+                transform: scale(0.95);
+            }
+        }
+        
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.8);
+                opacity: 0.8;
+            }
+            70% {
+                transform: scale(1.3);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+        }
+        </style>

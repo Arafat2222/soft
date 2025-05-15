@@ -1,0 +1,126 @@
+<div class="bg-white rounded-2xl shadow-lg p-6">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-semibold text-gray-800">Doctor Categories</h2>
+        <button onclick="document.getElementById('addCategoryForm').classList.remove('hidden')" 
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center">
+            <i class="fas fa-plus mr-2"></i>
+            Add New Category
+        </button>
+    </div>
+
+    <!-- Add Category Form -->
+    <form id="addCategoryForm" class="hidden mb-6 bg-gray-50 p-4 rounded-xl">
+        {% csrf_token %}
+        <div class="flex gap-4">
+            <div class="flex-1 relative">
+                <input type="text" 
+                    id="newCategory" 
+                    name="type" 
+                    placeholder="Enter category name" 
+                    class="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-200"
+                    required>
+            </div>
+            <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                Save Category
+            </button>
+            <button type="button" 
+                    onclick="document.getElementById('addCategoryForm').classList.add('hidden')"
+                    class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">
+                Cancel
+            </button>
+        </div>
+    </form>
+
+    <!-- Categories Table -->
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Doctors</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created Date</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for category in categories %}
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center">
+                            <div class="h-8 w-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
+                                <i class="fas fa-stethoscope"></i>
+                            </div>
+                            <div class="text-sm font-medium text-gray-900">{{ category.type }}</div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                            {{ category.doctor_count }} Doctors
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500">
+                        {{ category.created_at|date:"F d, Y" }}
+                    </td>
+                    <td class="px-6 py-4 text-right text-sm font-medium">
+                        <button onclick="deleteCategory('{{ category.id }}')" 
+                            class="text-red-600 hover:text-red-900 transition-colors">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Add this at the bottom of the file -->
+<script>
+document.getElementById('addCategoryForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+
+    fetch('/add_category/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert(data.message || 'Error adding category');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error adding category');
+    });
+});
+
+function deleteCategory(categoryId) {
+    if (confirm('Are you sure you want to delete this category?')) {
+        fetch(`/delete_category/${categoryId}/`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                location.reload();
+            } else {
+                alert('Cannot delete category with associated doctors');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting category');
+        });
+    }
+}
+</script>

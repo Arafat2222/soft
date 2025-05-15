@@ -1,0 +1,35 @@
+[
+    {
+        "model": "myapp.hospital",
+        "pk": 1,
+        "fields": {
+            "name": "World Specialized Hospital Ltd",
+            "address": "House-11, Road-2, Block-B, Mirpur-2, Dhaka-1216",
+            "google_maps_url": "https://maps.google.com/?q=23.8103,90.3659",
+            "created_at": "2024-01-20T10:00:00+06:00",
+            "updated_at": "2024-01-20T10:00:00+06:00"
+        }
+    },
+    {
+        "model": "myapp.hospital",
+        "pk": 2,
+        "fields": {
+            "name": "Square Hospitals Ltd",
+            "address": "18/F, Bir Uttam Qazi Nuruzzaman Sarak, West Panthapath, Dhaka 1205",
+            "google_maps_url": "https://maps.google.com/?q=23.7520,90.3840",
+            "created_at": "2024-01-20T10:00:00+06:00",
+            "updated_at": "2024-01-20T10:00:00+06:00"
+        }
+    },
+    {
+        "model": "myapp.hospital",
+        "pk": 3,
+        "fields": {
+            "name": "United Hospital Limited",
+            "address": "Plot 15, Road 71, Gulshan, Dhaka-1212",
+            "google_maps_url": "https://maps.google.com/?q=23.8012,90.4145",
+            "created_at": "2024-01-20T10:00:00+06:00",
+            "updated_at": "2024-01-20T10:00:00+06:00"
+        }
+    }
+]

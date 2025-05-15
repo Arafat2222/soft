@@ -1,0 +1,284 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% block content %}
+<style>
+    @keyframes gradientAnimation {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    .animated-bg {
+        background: linear-gradient(-45deg, #667eea, #764ba2, #6B8DD6, #8E37D7);
+        background-size: 400% 400%;
+        animation: gradientAnimation 15s ease infinite;
+    }
+
+    .glass-effect {
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    }
+
+    .input-focus {
+        background: rgba(255, 255, 255, 0.9);
+        transition: all 0.3s ease;
+    }
+
+    .input-focus:focus {
+        background: rgba(255, 255, 255, 1);
+        box-shadow: 0 0 15px rgba(102, 126, 234, 0.25);
+    }
+</style>
+
+<div class="min-h-screen animated-bg py-8">
+    <div class="max-w-3xl mx-auto">
+        <div class="glass-effect rounded-2xl p-8">
+            <!-- Add messages section here -->
+            {% include 'components/message.html' %}
+
+            <div class="flex items-center justify-between mb-8 pb-4 border-b border-blue-100">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-user-md text-3xl text-blue-600"></i>
+                    <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Add New Doctor</h1>
+                </div>
+                <a href="{% url 'admin_dashboard' %}" class="p-2 text-gray-600 hover:text-red-500 transition-colors rounded-full hover:bg-red-50">
+                    <i class="fas fa-times text-xl"></i>
+                </a>
+            </div>
+
+            <form id="addDoctorForm" method="POST" action="{% url 'add_doctor' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="grid grid-cols-2 gap-6">
+                    <!-- Personal Information Section -->
+                    <div class="col-span-2">
+                        <h2 class="text-lg font-semibold text-gray-700 mb-4 flex items-center">
+                            <i class="fas fa-user-circle mr-2 text-blue-500"></i>
+                            Personal Information
+                        </h2>
+                    </div>
+
+                    <div class="col-span-2 sm:col-span-1 group">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-user mr-2 text-blue-500"></i>Full Name*
+                        </label>
+                        <input type="text" name="full_name" required 
+                            value="{{ form_data.full_name|default:'' }}"
+                            class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 group-hover:border-blue-300">
+                    </div>
+                    <div class="col-span-2 sm:col-span-1 group">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-phone-alt mr-2 text-blue-500"></i>Mobile Number*
+                        </label>
+                        <input type="tel" name="mobile" required 
+                            pattern="[0-9]{11}"
+                            placeholder="01XXXXXXXXX"
+                            value = "{{ form_data.mobile|default:'' }}"
+                            title="Please enter a valid 11-digit mobile number"
+                            class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 group-hover:border-blue-300">
+                    </div>
+                    <!-- Continue with other input fields with similar styling -->
+                    <div class="col-span-2 sm:col-span-1 group">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-envelope mr-2 text-blue-500"></i>Email*
+                        </label>
+                        <input type="email" name="email" required 
+                            value="{{ form_data.email|default:'' }}"
+                            class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 group-hover:border-blue-300">
+                    </div>
+                    
+
+                    <!-- Credentials Section -->
+                    <div class="col-span-2">
+                        <h2 class="text-lg font-semibold text-gray-700 mb-4 flex items-center mt-4">
+                            <i class="fas fa-shield-alt mr-2 text-blue-500"></i>
+                            Credentials
+                        </h2>
+                    </div>
+                    <div class="col-span-2 sm:col-span-1 group">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-at mr-2 text-blue-500"></i>Username*
+                        </label>
+                        <!-- In your form inputs, add value attributes like this: -->
+                        <input 
+                            type="text" 
+                            name="username" 
+                            value="{{ form_data.username|default:'' }}"
+                            class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 group-hover:border-blue-300">
+                    </div>   
+                    
+
+                    <div class="col-span-2 sm:col-span-1 group">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-lock mr-2 text-blue-500"></i>Password*
+                        </label>
+                        <div class="relative">
+                            <input type="password" name="password" id="password" required 
+                                class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 group-hover:border-blue-300">
+                            <button type="button" onclick="togglePassword()" 
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-blue-500 transition-colors">
+                                <i id="passwordIcon" class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Professional Information Section -->
+                    <div class="col-span-2">
+                        <h2 class="text-lg font-semibold text-gray-700 mb-4 flex items-center mt-4">
+                            <i class="fas fa-briefcase-medical mr-2 text-blue-500"></i>
+                            Professional Information
+                        </h2>
+                    </div>
+
+                    <div class="col-span-2 sm:col-span-1 group">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-graduation-cap mr-2 text-blue-500"></i>Degrees*
+                        </label>
+                        <input type="text" 
+                               name="degrees" required 
+                               value="{{ form_data.degrees|default:'' }}"
+                               class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 group-hover:border-blue-300">
+                    </div>
+                     
+                    <!-- <div class="col-span-2 sm:col-span-1 group">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-graduation-cap mr-2 text-blue-500"></i>Hospital Name*
+                        </label>
+                        <input type="text" 
+                               name="hospital" required 
+                               value="{{ form_data.hospital|default:'' }}"
+                               class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 group-hover:border-blue-300">
+                    </div> -->
+
+
+
+                    <div class="col-span-2 sm:col-span-1 group">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-clock mr-2 text-blue-500"></i>Experience (years)*
+                        </label>
+                        <input type="number" 
+                               name="experience" 
+                               min="0" required 
+                               value="{{ form_data.experience|default:'' }}"
+                               class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 group-hover:border-blue-300">
+                    </div>
+
+                    <div class="col-span-2 sm:col-span-1 group">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-tag mr-2 text-blue-500"></i>Category*
+                        </label>
+                        <select name="category" required 
+                            class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 group-hover:border-blue-300">
+                            <option value="">Select Category</option>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}" {% if form_data.category == category.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ category.type }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-span-2 group">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-align-left mr-2 text-blue-500"></i>Description*
+                        </label>
+                        <textarea name="description" required 
+                                  class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 group-hover:border-blue-300">{{ form_data.description|default:'' }}</textarea>
+                        </textarea>
+                    </div>
+
+                    
+                    <div class="col-span-2">
+                        <h2 class="text-lg font-semibold text-gray-700 mb-4 flex items-center mt-4">
+                            <i class="fas fa-calendar-alt mr-2 text-blue-500"></i>
+                            Weekly Schedule
+                        </h2>
+                    </div>
+
+                    {% for day in "Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday"|split:"," %}
+                    <div class="col-span-2 sm:col-span-1 group">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-clock mr-2 text-blue-500"></i>{{ day }}
+                        </label>
+                        <div class="flex space-x-2">
+                            <input type="time" 
+                                   name="start_time_{{ day|lower }}" 
+                                   class="w-1/2 px-4 py-2 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 group-hover:border-blue-300"
+                                   value="{{ form_data.start_time|default:'' }}">
+                            <input type="time" 
+                                   name="end_time_{{ day|lower }}" 
+                                   class="w-1/2 px-4 py-2 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 group-hover:border-blue-300"
+                                   value="{{ form_data.end_time|default:'' }}">
+                            <select name="is_available_{{ day|lower }}" 
+                                    class="w-1/3 px-4 py-2 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 group-hover:border-blue-300">
+                                <option value="1">Available</option>
+                                <option value="0">Not Available</option>
+                            </select>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                </div>
+
+                <div class="col-span-2">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-camera mr-2 text-blue-500"></i>Profile Image*
+                    </label>
+                    <div class="mt-1 flex items-center gap-4">
+                        <span class="inline-block h-20 w-20 rounded-full overflow-hidden bg-gray-100 border-2 border-blue-200">
+                            <img id="preview_image" class="h-full w-full object-cover" src="" alt="Preview">
+                        </span>
+                        <label class="cursor-pointer px-6 py-3 bg-blue-50 text-blue-700 rounded-xl hover:bg-blue-100 transition-colors flex items-center">
+                            <i class="fas fa-upload mr-2"></i>
+                            <span>Upload Photo</span>
+                            <input type="file" name="image" required class="hidden" onchange="previewImage(this)">
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="mt-8 flex justify-end gap-4">
+                    <a href="{% url 'admin_dashboard' %}" 
+                        class="px-6 py-3 bg-gray-50 text-gray-700 rounded-xl hover:bg-gray-100 transition-colors flex items-center">
+                        <i class="fas fa-times mr-2"></i>
+                        Cancel
+                    </a>
+                    <button type="submit" 
+                        class="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 flex items-center">
+                        <i class="fas fa-plus-circle mr-2"></i>
+                        Add Doctor
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Keep existing scripts unchanged -->
+<script>
+    function togglePassword() {
+        var passwordField = document.getElementById('password');
+        var passwordIcon = document.getElementById('passwordIcon');
+        
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            passwordIcon.classList.remove('fa-eye');
+            passwordIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordField.type = 'password';
+            passwordIcon.classList.remove('fa-eye-slash');
+            passwordIcon.classList.add('fa-eye');
+        }
+    }
+    function previewImage(input) {
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('preview_image').src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
+{% endblock content %}

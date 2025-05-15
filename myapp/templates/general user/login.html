@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Blurred Background Overlay -->
+<div class="fixed inset-0 bg-black/30 backdrop-blur-sm z-10"></div>
+
+<!-- Login Container -->
+<div class="fixed inset-0 flex items-center justify-center z-50 mt-14">
+    <div class="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-[420px] max-h-[640px] p-8 transform transition-all relative border border-white/20">
+        {% include 'components/message.html'%} 
+        <!-- Close Button -->
+        <a href="{% url 'index' %}" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors hover:rotate-90 transform duration-300">
+            <i class="fas fa-times text-xl"></i>
+        </a>
+
+        <!-- Login Header -->
+        <div class="text-center mb-8">
+            <div class="mb-4 text-[#33BFFF]">
+                <i class="fas fa-user-circle text-5xl"></i>
+            </div>
+            <h2 class="text-3xl font-bold bg-gradient-to-r from-[#33BFFF] to-[#0099FF] text-transparent bg-clip-text">Welcome Back</h2>
+            <p class="text-gray-600 mt-2">Please sign in to your account</p>
+        </div>
+
+        <!-- Form inputs with enhanced styling -->
+        <form method="POST" action="{% url 'general_user_login' %}" class="space-y-6">
+            {% csrf_token %}
+            
+            <!-- Email Input -->
+            <div class="space-y-2 group">
+                <label for="email" class="text-sm font-medium text-gray-700 block">Email Address</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                        <i class="fas fa-envelope text-gray-500 text-lg"></i>
+                    </div>
+                    <input type="email" name="email" id="email" 
+                           class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#33BFFF] focus:border-transparent"
+                           placeholder="Enter your email">
+                </div>
+            </div>
+
+            <!-- Password Input -->
+            <div class="space-y-2 group">
+                <label for="password" class="text-sm font-medium text-gray-700 block">Password</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center">
+                        <i class="fas fa-lock text-gray-500 text-lg"></i>
+                    </div>
+                    <input type="password" name="password" id="password" 
+                           class="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#33BFFF] focus:border-transparent"
+                           placeholder="Enter your password">
+                    <button type="button" 
+                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-[#33BFFF] transition-colors"
+                            onclick="togglePasswordVisibility()">
+                        <i class="fas fa-eye text-lg" id="toggleIcon"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Move this script to just before the closing </body> tag -->
+            <script>
+                function togglePasswordVisibility() {
+                    const passwordInput = document.getElementById('password');
+                    const toggleIcon = document.getElementById('toggleIcon');
+                    
+                    if (passwordInput.type === 'password') {
+                        passwordInput.type = 'text';
+                        toggleIcon.classList.remove('fa-eye');
+                        toggleIcon.classList.add('fa-eye-slash');
+                    } else {
+                        passwordInput.type = 'password';
+                        toggleIcon.classList.remove('fa-eye-slash');
+                        toggleIcon.classList.add('fa-eye');
+                    }
+                }
+            </script>
+
+            <!-- Remember Me & Forgot Password with enhanced styling -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <input type="checkbox" id="remember" class="h-4 w-4 text-[#33BFFF] rounded border-gray-300">
+                    <label for="remember" class="ml-2 text-sm text-gray-600">Remember me</label>
+                </div>
+                <a href="#" class="text-sm text-[#33BFFF] hover:text-[#0099FF] transition-colors">Forgot password?</a>
+            </div>
+
+            <!-- Login Button with enhanced animation -->
+            <button type="submit" 
+                    class="w-full bg-gradient-to-r from-[#33BFFF] to-[#0099FF] text-white py-3 rounded-xl hover:shadow-lg hover:shadow-blue-500/30 transition-all transform hover:scale-[1.02] font-medium">
+                Sign in
+            </button>
+        </form>
+
+        <!-- Social Login with enhanced styling -->
+        <div class="grid grid-cols-2 gap-4 mt-6">
+            <button class="flex items-center justify-center px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 hover:shadow-md transition-all duration-300">
+                <img src="{% static 'images/google.png' %}" alt="Google" class="w-5 h-5 mr-2">
+                <span class="text-gray-600">Google</span>
+            </button>
+            <button class="flex items-center justify-center px-4 py-3 border border-gray-200 rounded-xl hover:bg-gray-50 hover:shadow-md transition-all duration-300">
+                <i class="fab fa-facebook text-blue-600 mr-2"></i>
+                <span class="text-gray-600">Facebook</span>
+            </button>
+        </div>
+
+        <!-- Sign Up Link with enhanced styling -->
+        <p class="text-center mt-3 text-gray-600">
+            Don't have an account? 
+            <a href="{% url 'general_user_signup'%}" class="text-[#33BFFF] hover:text-[#0099FF] font-medium transition-colors">Sign up</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

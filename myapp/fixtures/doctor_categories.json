@@ -1,0 +1,47 @@
+[
+    {
+        "model": "myapp.doctorcategory",
+        "pk": 1,
+        "fields": {
+            "type": "Cardiologist",
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "myapp.doctorcategory",
+        "pk": 2,
+        "fields": {
+            "type": "Dermatologist",
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "myapp.doctorcategory",
+        "pk": 3,
+        "fields": {
+            "type": "Neurologist",
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "myapp.doctorcategory",
+        "pk": 4,
+        "fields": {
+            "type": "Pediatrician",
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "myapp.doctorcategory",
+        "pk": 5,
+        "fields": {
+            "type": "Orthopedic Surgeon",
+            "created_at": "2024-01-01T00:00:00Z",
+            "updated_at": "2024-01-01T00:00:00Z"
+        }
+    }
+]

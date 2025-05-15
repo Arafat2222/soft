@@ -1,0 +1,68 @@
+{% extends 'general user/gs_base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto p-6">
+    <!-- Doctor Info -->
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+        <div class="flex items-center space-x-6">
+            {% if doctor.image %}
+                <img src="{{ doctor.image.url }}" alt="{{ doctor.full_name }}" class="w-24 h-24 rounded-full object-cover">
+            {% else %}
+                <div class="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center">
+                    <i class="fas fa-user-md text-[#33BFFF] text-4xl"></i>
+                </div>
+            {% endif %}
+            <div>
+                <h1 class="text-2xl font-semibold text-gray-800">Dr. {{ doctor.full_name }}</h1>
+                <p class="text-gray-500">{{ doctor.category.type }}</p>
+                <p class="text-gray-600 mt-1">{{ doctor.degrees }}</p>
+                <p class="text-gray-600">Experience: {{ doctor.experience }} years</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointment Booking -->
+    <div class="bg-white rounded-xl shadow-sm p-6">
+        <h2 class="text-xl font-semibold mb-6">Book Appointment</h2>
+
+        <!-- Doctor's Schedule -->
+        <div class="mb-6">
+            <h3 class="text-lg font-medium text-gray-800 mb-4">Doctor's Schedule</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {% for schedule in schedules %}
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h4 class="font-medium text-gray-800">{{ schedule.day }}</h4>
+                    <p class="text-gray-600">{{ schedule.start_time|time:"g:i A" }} - {{ schedule.end_time|time:"g:i A" }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+            
+            <div class="space-y-4">
+                <div>
+                    <label for="appointment_date" class="block text-sm font-medium text-gray-700">Select Appointment Date *</label>
+                    <input type="date" id="appointment_date" name="appointment_date" 
+                           min="{{ today_date|date:'Y-m-d' }}" 
+                           max="{{ max_date|date:'Y-m-d' }}" 
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                           required>
+                </div>
+                
+                <!-- Remove the time selection div -->
+                
+                
+            
+
+            <button type="submit" 
+                    class="w-full bg-[#33BFFF] text-white px-4 py-3 rounded-lg 
+                           hover:bg-[#0099FF] transition-all transform 
+                           hover:scale-105 font-medium">
+                Confirm Appointment
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

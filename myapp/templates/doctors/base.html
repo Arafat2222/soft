@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Doctor Dashboard{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="min-h-screen bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <span class="text-2xl font-bold text-[#33BFFF]">Doctor Portal</span>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="{% url 'doctor_home' %}" class="border-[#33BFFF] text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Dashboard
+                        </a>
+                        <a href="{% url 'doctor_appointments' %}" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Appointments
+                        </a>
+                        <a href="{% url 'doctor_schedule' %}" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Schedule
+                        </a>
+                    </div>
+                </div>
+                <div class="hidden sm:ml-6 sm:flex sm:items-center">
+                    <div class="ml-3 relative flex items-center space-x-4">
+                        <span class="text-gray-700 cursor-pointer hover:text-[#33BFFF] transition-colors" onclick="openDoctorDetails()">
+                            Dr. {{ request.session.doctor_name }}
+                        </span>
+                        <a href="{% url 'general_user_logout' %}" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors text-sm">
+                            Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+        {% for message in messages %}
+        <div class="rounded-lg p-4 mb-4 {% if message.tags == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %} flex justify-between items-center">
+            <span>{{ message }}</span>
+            <button onclick="this.parentElement.remove()" class="text-current hover:opacity-75">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Doctor Details Modal -->
+    <div id="doctorDetailsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-2xl mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-semibold text-gray-800">Doctor Profile</h3>
+                <button onclick="closeDoctorDetails()" class="text-gray-500 hover:text-gray-700 transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-1">
+                    <label class="block text-gray-700 text-sm font-bold">Full Name</label>
+                    <p id="doctor_full_name" class="text-gray-900 bg-gray-50 rounded-lg p-3"></p>
+                </div>
+                <div class="space-y-1">
+                    <label class="block text-gray-700 text-sm font-bold">Email</label>
+                    <p id="doctor_email" class="text-gray-900 bg-gray-50 rounded-lg p-3"></p>
+                </div>
+                <div class="space-y-1">
+                    <label class="block text-gray-700 text-sm font-bold">Mobile</label>
+                    <p id="doctor_mobile" class="text-gray-900 bg-gray-50 rounded-lg p-3"></p>
+                </div>
+                <div class="space-y-1">
+                    <label class="block text-gray-700 text-sm font-bold">Degrees</label>
+                    <p id="doctor_degrees" class="text-gray-900 bg-gray-50 rounded-lg p-3"></p>
+                </div>
+                <div class="space-y-1 col-span-2">
+                    <label class="block text-gray-700 text-sm font-bold">Description</label>
+                    <p id="doctor_description" class="text-gray-900 bg-gray-50 rounded-lg p-3"></p>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3 mt-6">
+                <button onclick="openEditDoctorModal()" class="bg-[#33BFFF] hover:bg-[#0099FF] text-white px-6 py-2 rounded-lg transition-colors">
+                    Edit Profile
+                </button>
+                <button onclick="closeDoctorDetails()" class="px-6 py-2 text-gray-600 hover:text-gray-800 transition-colors">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add this modal right after the Doctor Details Modal -->
+    <div id="editDoctorModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-2xl mx-4">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-semibold text-gray-800">Edit Profile</h3>
+                <button onclick="closeEditModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="editDoctorForm" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-1">
+                        <label class="block text-gray-700 text-sm font-bold">Full Name</label>
+                        <input type="text" name="full_name" id="edit_full_name" class="w-full border rounded-lg p-3" required>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block text-gray-700 text-sm font-bold">Email</label>
+                        <input type="email" name="email" id="edit_email" class="w-full border rounded-lg p-3" required>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block text-gray-700 text-sm font-bold">Mobile</label>
+                        <input type="tel" name="mobile" id="edit_mobile" class="w-full border rounded-lg p-3" required>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="block text-gray-700 text-sm font-bold">Degrees</label>
+                        <input type="text" name="degrees" id="edit_degrees" class="w-full border rounded-lg p-3">
+                    </div>
+                    <div class="space-y-1 col-span-2">
+                        <label class="block text-gray-700 text-sm font-bold">Description</label>
+                        <textarea name="description" id="edit_description" class="w-full border rounded-lg p-3" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button type="button" onclick="closeEditModal()" class="px-6 py-2 text-gray-600 hover:text-gray-800">
+                        Cancel
+                    </button>
+                    <button type="submit" class="bg-[#33BFFF] hover:bg-[#0099FF] text-white px-6 py-2 rounded-lg">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Update the script section -->
+    <script>
+        function openDoctorDetails() {
+            fetch('/doctor/get-details/')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('doctor_full_name').textContent = data.full_name;
+                    document.getElementById('doctor_email').textContent = data.email;
+                    document.getElementById('doctor_mobile').textContent = data.mobile;
+                    document.getElementById('doctor_degrees').textContent = data.degrees;
+                    document.getElementById('doctor_description').textContent = data.description;
+                    
+                    document.getElementById('doctorDetailsModal').classList.remove('hidden');
+                    document.getElementById('doctorDetailsModal').classList.add('flex');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error loading doctor details');
+                });
+        }
+        
+        function closeDoctorDetails() {
+            document.getElementById('doctorDetailsModal').classList.add('hidden');
+            document.getElementById('doctorDetailsModal').classList.remove('flex');
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('doctorDetailsModal');
+            if (event.target == modal) {
+                closeDoctorDetails();
+            }
+        }
+    </script>
+
+    
+</body>
+</html>
