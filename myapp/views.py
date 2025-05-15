@@ -894,7 +894,7 @@ def chat_with_gemini(request):
             user_message = data.get('message', '')
             
             # Configure the Gemini API
-            genai.configure(api_key="AIzaSyAWHroEcKeXLxK5-HRss1NSO0lt2_rcCWY")
+            genai.configure(api_key="Your API Key")
             
             # Use Gemini 1.5 Flash model
             model = genai.GenerativeModel(model_name="models/gemini-1.5-flash-latest")
